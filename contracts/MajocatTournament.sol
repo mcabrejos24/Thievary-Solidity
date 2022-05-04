@@ -22,9 +22,9 @@ contract MajocatTournament is ERC721 {
   // }
 
   /*
-    imageURI
+    A, X, Y, Z
     red, green, blue, purple
-    A, B, C, X, Y, Z
+    imageURI
     1, 2, etc.
     stealsLeft 2
     done 0
@@ -37,7 +37,7 @@ contract MajocatTournament is ERC721 {
   */
 
   struct PlayerAttributes {
-    string playerIndex;
+    uint playerIndex;
     string clan;
     string color;
     string imageURI;
@@ -70,17 +70,14 @@ contract MajocatTournament is ERC721 {
     string[] memory playerColors,
     string[] memory playerImageURIs
   ) ERC721("Theivary", "THIEF") {
-
-    uint memory classNo = uint(_tokenIds) / uint(100) + 1;
     
-   
     for(uint i = 0; i < playerClan.length; i += 1) {
       PlayerAttributes memory player = PlayerAttributes({
         playerIndex: i,
         clan: playerClan[i],
         color: playerColors[i],
         imageURI: playerImageURIs[i],
-        class: classNo,
+        class: -1,
         stealsLeft: 2,
         stealsDone: 0,
         daggerCount: 1,
@@ -92,57 +89,40 @@ contract MajocatTournament is ERC721 {
 
       console.log("Done initializing %s w/ HP %s, img %s", player.color, player.clan, player.imageURI);
     }
-
   }
 
-  function makeThiefNFT(string memory username, string memory color) public {
-        uint256 newItemId = _tokenIds.current();
+  function mintThiefNFT(uint _playerIndex) public {
+    uint256 newItemId = _tokenIds.current();
 
-        string memory tournamentNo = Strings.toString(uint(newItemId) / uint(16) + 1);
+    _safeMint(msg.sender, newItemId);
 
-        // 23 is max for username to look good
-        string memory finalSvg = string(abi.encodePacked(svgOpen, username, svgSecond, tournamentNo, svgThird, color, "'/></svg>"));
+    uint classNo = uint(newItemId) / uint(100) + 1;
 
-        console.log(finalSvg);
+    nftHolderAttributes[newItemId] = PlayerAttributes({
+      playerIndex: _playerIndex,
+      clan: defaultPlayerAttributes[_playerIndex].clan,
+      color: defaultPlayerAttributes[_playerIndex].color,
+      imageURI: defaultPlayerAttributes[_playerIndex].imageURI,
+      class: classNo,
+      stealsLeft: defaultPlayerAttributes[_playerIndex].stealsLeft,
+      stealsDone: defaultPlayerAttributes[_playerIndex].stealsDone,
+      daggerCount: defaultPlayerAttributes[_playerIndex].daggerCount,
+      shieldCount: defaultPlayerAttributes[_playerIndex].shieldCount,
+      xp: 0,
+      level: 0
+    });
 
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "',
-                            username,
-                            '", "description": "Player card for the MajoCat Tournament.", "image": "data:image/svg+xml;base64,',
-                            Base64.encode(bytes(finalSvg)),
-                        '"}'
-                    )
-                )
-            )
-        );
+    console.log("Minted NFT w/ tokenId %s and playerIndex %s", newItemId, _playerIndex);
 
-        string memory finalTokenUri = string(
-            abi.encodePacked("data:application/json;base64,", json)
-        );
+    nftHolders[msg.sender] = newItemId;
 
-        console.log("\n--------------------");
-        console.log(
-            string(
-                abi.encodePacked(
-                    "https://nftpreview.0xdev.codes/?code=",
-                    finalTokenUri
-                )
-            )
-        );
-        console.log("--------------------\n");
+      
+    _tokenIds.increment();
 
-        _safeMint(msg.sender, newItemId);
+    console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
 
-        _setTokenURI(newItemId, finalTokenUri);
-
-        _tokenIds.increment();
-        console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
-
-        // emit NewEpicNFTMinted(msg.sender, newItemId);
-    }
+    emit PlayerNFTMinted(msg.sender, newItemId, _playerIndex);
+  }
 
 
 
