@@ -77,7 +77,7 @@ contract MajocatTournament is ERC721 {
         clan: playerClan[i],
         color: playerColors[i],
         imageURI: playerImageURIs[i],
-        class: -1,
+        class: 0,
         stealsLeft: 2,
         stealsDone: 0,
         daggerCount: 1,
