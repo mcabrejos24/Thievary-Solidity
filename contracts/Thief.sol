@@ -61,7 +61,7 @@ contract Thief is ERC721 {
       defaultPlayerAttributes.push(player);
       console.log("Done initializing color %s w/ clan %s, img %s", player.color, player.clan, player.imageURI);
     }
-    sendShieldOnNumber = 50;
+    sendShieldOnNumber = 3;
   }
 
   function mintThiefNFT(uint _playerIndex) public {
@@ -171,14 +171,17 @@ contract Thief is ERC721 {
 
     // if 25 total steals have been done, then reset everyone's steal count;
     if (_totalStealsCount.current() % 25 == 0) {
-      resetAllStealCounts();
+      resetStealsAndLevelUp();
     }
   }
 
-  function resetAllStealCounts() private {
-    for(uint256 i = 0; i < players.length; i += 1) {
+  function resetStealsAndLevelUp() private {
+    for (uint256 i = 0; i < players.length; i += 1) {
       uint256 nftTokenIdOfPlayer = nftHolders[players[i]];
       PlayerAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
+      if (player.daggerCount > 2) {
+        player.level += 1;
+      }
       player.stealsLeft = 2;
     }
   }
