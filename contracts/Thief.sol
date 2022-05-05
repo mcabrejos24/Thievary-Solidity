@@ -86,6 +86,8 @@ contract Thief is ERC721 {
     players.push(msg.sender);
     _tokenIds.increment();
 
+    console.log("minted successfull with: ", _tokenIds.current());
+
     emit PlayerNFTMinted(msg.sender, newItemId, _playerIndex);
 
     // call this every X (sendShieldOnNumber) amount of mints
@@ -210,5 +212,9 @@ contract Thief is ERC721 {
   modifier restricted() {
     require(msg.sender == manager);
     _;
+  }
+
+  function getAllDefaultThiefs() public view returns (PlayerAttributes[] memory) {
+    return defaultPlayerAttributes;
   }
 }
