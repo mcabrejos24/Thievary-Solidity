@@ -59,7 +59,6 @@ contract Thief is ERC721 {
         level: 0
       });
       defaultPlayerAttributes.push(player);
-      console.log("Done initializing color %s w/ clan %s, img %s", player.color, player.clan, player.imageURI);
     }
     sendShieldOnNumber = 3;
   }
@@ -83,12 +82,10 @@ contract Thief is ERC721 {
       level: defaultPlayerAttributes[_playerIndex].level
     });
 
-    console.log("Minted NFT w/ tokenId %s and playerIndex %s", newItemId, _playerIndex);
     nftHolders[msg.sender] = newItemId;
     players.push(msg.sender);
     _tokenIds.increment();
 
-    console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
     emit PlayerNFTMinted(msg.sender, newItemId, _playerIndex);
 
     // call this every X (sendShieldOnNumber) amount of mints
@@ -132,7 +129,7 @@ contract Thief is ERC721 {
   }
 
   function sendShieldToPlayer() private {
-    uint index = random() % (_tokenIds.current() + 1);
+    uint index = random() % _tokenIds.current();
     address winnerOfShield = players[index];
     uint256 nftTokenIdOfPlayer = nftHolders[winnerOfShield];
     PlayerAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
@@ -194,7 +191,6 @@ contract Thief is ERC721 {
     return players;
   }
   
-
   function checkIfUserHasNFT() public view returns (PlayerAttributes memory) {
     // Get the tokenId of the user's character NFT
     uint256 userNftTokenId = nftHolders[msg.sender];
@@ -215,6 +211,4 @@ contract Thief is ERC721 {
     require(msg.sender == manager);
     _;
   }
-
-  
 }
