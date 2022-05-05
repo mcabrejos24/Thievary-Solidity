@@ -28,6 +28,8 @@ const main = async () => {
     await txn.wait();
     console.log("Minted NFT #3");
 
+    console.log("Done deploying and minting!");
+
     // Get the value of the NFT's URI.
     let returnedTokenUri = await gameContract.tokenURI(0);
     console.log("Token URI:", returnedTokenUri);
