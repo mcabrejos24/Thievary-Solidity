@@ -99,13 +99,11 @@ contract Thief is ERC721 {
 
     string memory json = Base64.encode(
       abi.encodePacked(
-        '{"name": "Clan ',
-        playerAttributes.clan,
-        ' -- NFT #: ',
+        '{"name": "Thievary #: ',
         Strings.toString(_tokenId),
         '", "description": "This is an NFT that lets people play in the game Thievary!", "image": "',
         playerAttributes.imageURI,
-        '", "attributes": [ {"trait_type": "Clan", "value": ', playerAttributes.clan, '}, {"trait_type": "Color", "value": ', playerAttributes.color, '}, {"trait_type": "Class", "value": Class #', strClass, '}, { "trait_type": "Steals Left", "value": ', strStealsLeft,', "max_value":', strMaxSteals,'}, { "trait_type": "Total Lifetime Steals", "value": ',
+        '", "attributes": [ {"trait_type": "Clan", "value": "', playerAttributes.clan, '"}, {"trait_type": "Color", "value": "', playerAttributes.color, '"}, {"trait_type": "Class", "value": "#', strClass, '"}, { "trait_type": "Steals Left", "value": ', strStealsLeft,', "max_value": ', strMaxSteals,'}, { "trait_type": "Total Lifetime Steals", "value": ',
         strTotalSteals,'}, {"trait_type": "Dagger Count", "value": ', strDaggerCount, '}, {"trait_type": "Shield Count", "value": ', 
         strShieldCount, '}, {"trait_type": "Level", "value": ', strLevel, '} ]}'
       )
