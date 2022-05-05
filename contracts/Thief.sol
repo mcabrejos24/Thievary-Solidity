@@ -15,10 +15,10 @@ contract Thief is ERC721 {
     string imageURI;
     uint class;
     uint stealsLeft;
-    uint stealsDone;
+    uint maxSteals;
+    uint totalStealsAttempted;
     uint daggerCount;
     uint shieldCount;
-    uint xp;
     uint level;
   }
 
@@ -48,10 +48,10 @@ contract Thief is ERC721 {
         imageURI: playerImageURIs[i],
         class: 0,
         stealsLeft: 2,
-        stealsDone: 0,
+        maxSteals: 2,
+        totalStealsAttempted: 0,
         daggerCount: 1,
         shieldCount: 0,
-        xp: 0,
         level: 0
       });
       defaultPlayerAttributes.push(player);
@@ -71,11 +71,11 @@ contract Thief is ERC721 {
       imageURI: defaultPlayerAttributes[_playerIndex].imageURI,
       class: classNo,
       stealsLeft: defaultPlayerAttributes[_playerIndex].stealsLeft,
-      stealsDone: defaultPlayerAttributes[_playerIndex].stealsDone,
+      maxSteals: defaultPlayerAttributes[_playerIndex].maxSteals,
+      totalStealsAttempted: defaultPlayerAttributes[_playerIndex].totalStealsAttempted,
       daggerCount: defaultPlayerAttributes[_playerIndex].daggerCount,
       shieldCount: defaultPlayerAttributes[_playerIndex].shieldCount,
-      xp: 0,
-      level: 0
+      level: defaultPlayerAttributes[_playerIndex].level
     });
 
     console.log("Minted NFT w/ tokenId %s and playerIndex %s", newItemId, _playerIndex);
@@ -84,5 +84,37 @@ contract Thief is ERC721 {
 
     console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
     emit PlayerNFTMinted(msg.sender, newItemId, _playerIndex);
+  }
+
+  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+    PlayerAttributes memory playerAttributes = nftHolderAttributes[_tokenId];
+
+    string memory strClass = Strings.toString(playerAttributes.class);
+    string memory strStealsLeft = Strings.toString(playerAttributes.stealsLeft);
+    string memory strMaxSteals = Strings.toString(playerAttributes.maxSteals);
+    string memory strTotalSteals = Strings.toString(playerAttributes.totalStealsAttempted);
+    string memory strDaggerCount = Strings.toString(playerAttributes.daggerCount);
+    string memory strShieldCount = Strings.toString(playerAttributes.shieldCount);
+    string memory strLevel = Strings.toString(playerAttributes.level);
+
+    string memory json = Base64.encode(
+      abi.encodePacked(
+        '{"name": "Clan ',
+        playerAttributes.clan,
+        ' -- NFT #: ',
+        Strings.toString(_tokenId),
+        '", "description": "This is an NFT that lets people play in the game Thievary!", "image": "',
+        playerAttributes.imageURI,
+        '", "attributes": [ {"trait_type": "Clan", "value": ', playerAttributes.clan, '}, {"trait_type": "Color", "value": ', playerAttributes.color, '}, {"trait_type": "Class", "value": Class #', strClass, '}, { "trait_type": "Steals Left", "value": ', strStealsLeft,', "max_value":', strMaxSteals,'}, { "trait_type": "Total Lifetime Steals", "value": ',
+        strTotalSteals,'}, {"trait_type": "Dagger Count", "value": ', strDaggerCount, '}, {"trait_type": "Shield Count", "value": ', 
+        strShieldCount, '}, {"trait_type": "Level", "value": ', strLevel, '} ]}'
+      )
+    );
+
+    string memory output = string(
+      abi.encodePacked("data:application/json;base64,", json)
+    );
+    
+    return output;
   }
 }
