@@ -186,6 +186,10 @@ contract Thief is ERC721 {
     }
   }
 
+  function managerCallResetSteals() public restricted {
+    resetStealsAndLevelUp();
+  }
+
   function getPlayers() public view returns (address[] memory) {
     return players;
   }
@@ -203,7 +207,7 @@ contract Thief is ERC721 {
     }
   }
 
-  function updateSendShieldOnNumber (uint count) public restricted {
+  function updateSendShieldOnNumber(uint count) public restricted {
     sendShieldOnNumber = count;
   }
 
