@@ -189,7 +189,7 @@ contract Thief is ERC721 {
     resetStealsAndLevelUp();
   }
 
-  function getPlayers() public view returns (address[] memory) {
+  function getPlayerAddresses() public view returns (address[] memory) {
     return players;
   }
   
@@ -199,6 +199,17 @@ contract Thief is ERC721 {
     // If the user has a tokenId in the map, return their character.
     if (userNftTokenId >= 0) {
       return nftHolderAttributes[userNftTokenId];
+    } else {
+      PlayerAttributes memory emptyStruct;
+      return emptyStruct;
+    }
+  }
+
+  function getAPlayerNftDetails(address playerAdd) public view returns (PlayerAttributes memory) {
+    uint256 playerNftTokenId = nftHolders[playerAdd];
+
+    if (playerNftTokenId >= 0) {
+      return nftHolderAttributes[playerNftTokenId];
     } else {
       PlayerAttributes memory emptyStruct;
       return emptyStruct;
