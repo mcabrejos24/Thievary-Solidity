@@ -14,12 +14,19 @@ const main = async () => {
 
     let txn = await gameContract.mintThiefNFT(0);
     await txn.wait();
+    console.log("Minted NFT #1");
+
+    txn = await gameContract.mintThiefNFT(1);
+    await txn.wait();
+    console.log("Minted NFT #2");
+
+    txn = await gameContract.mintThiefNFT(2);
+    await txn.wait();
+    console.log("Minted NFT #3");
 
     txn = await gameContract.mintThiefNFT(3);
     await txn.wait();
-
-    txn = await gameContract.mintThiefNFT(3);
-    await txn.wait();
+    console.log("Minted NFT #3");
 
     // Get the value of the NFT's URI.
     let returnedTokenUri = await gameContract.tokenURI(0);
