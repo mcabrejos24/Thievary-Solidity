@@ -64,18 +64,6 @@ contract Thief is ERC721 {
     sendShieldOnNumber = 50;
   }
 
-  function random() private view returns (uint) {
-        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, block.timestamp * block.difficulty)));
-  }
-
-  function sendShieldToPlayer() private {
-    uint index = random() % (_tokenIds.current() + 1);
-    address winnerOfShield = players[index];
-    uint256 nftTokenIdOfPlayer = nftHolders[winnerOfShield];
-    PlayerAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
-    player.shieldCount = player.shieldCount + 1;
-  } 
-
   function mintThiefNFT(uint _playerIndex) public {
     uint256 newItemId = _tokenIds.current();
     _safeMint(msg.sender, newItemId);
@@ -137,6 +125,66 @@ contract Thief is ERC721 {
     );
     
     return output;
+  }
+
+  function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, block.timestamp * block.difficulty)));
+  }
+
+  function sendShieldToPlayer() private {
+    uint index = random() % (_tokenIds.current() + 1);
+    address winnerOfShield = players[index];
+    uint256 nftTokenIdOfPlayer = nftHolders[winnerOfShield];
+    PlayerAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
+    player.shieldCount = player.shieldCount + 1;
+  } 
+
+  function steal(address addressToStealFrom) public {
+    uint256 nftTokenIdOfThief = nftHolders[msg.sender];
+    PlayerAttributes storage thief = nftHolderAttributes[nftTokenIdOfThief];
+    
+    require(
+      thief.stealsLeft > 0,
+      "Error: player thief must have at least one steal to steal."
+    );
+
+    uint256 nftTokenIdOfVictim = nftHolders[addressToStealFrom];
+    PlayerAttributes storage victim = nftHolderAttributes[nftTokenIdOfVictim];
+    
+    require(
+      victim.daggerCount > 0 || victim.shieldCount > 0,
+      "Error: player victim must have at least one dagger to steal."
+    );
+
+    if (victim.shieldCount > 0) {
+      thief.shieldCount += 1;
+      thief.stealsLeft -= 1;
+      victim.shieldCount -= 1;
+    } else {
+      thief.daggerCount += 1;
+      thief.stealsLeft -= 1;
+      victim.daggerCount -= 1;
+    }
+
+    thief.totalStealsAttempted = thief.totalStealsAttempted + 1;
+    _totalStealsCount.increment();
+
+    // if 25 total steals have been done, then reset everyone's steal count;
+    if (_totalStealsCount.current() % 25 == 0) {
+      resetAllStealCounts();
+    }
+  }
+
+  function resetAllStealCounts() private {
+    for(uint256 i = 0; i < players.length; i += 1) {
+      uint256 nftTokenIdOfPlayer = nftHolders[players[i]];
+      PlayerAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
+      player.stealsLeft = 2;
+    }
+  }
+
+  function getPlayers() public view returns (address[] memory) {
+    return players;
   }
   
 
