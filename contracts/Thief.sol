@@ -5,13 +5,14 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
+import "hardhat/console.sol";
 
 contract Thief is ERC721 {
   address public manager;
   uint public sendShieldOnNumber;
 
   struct PlayerAttributes {
-    uint playerIndex;
+    uint nftTypeIndex;
     string clan;
     string color;
     string imageURI;
@@ -36,7 +37,7 @@ contract Thief is ERC721 {
   mapping(address => uint256) public nftHolders;
   address[] public players;
 
-  event PlayerNFTMinted(address sender, uint256 tokenId, uint256 playerIndex);
+  event PlayerNFTMinted(address sender, uint256 tokenId, uint256 nftTypeIndex);
 
   constructor(
     string[] memory playerClan,
@@ -46,11 +47,11 @@ contract Thief is ERC721 {
     manager = msg.sender;
     for(uint i = 0; i < playerClan.length; i += 1) {
       PlayerAttributes memory player = PlayerAttributes({
-        playerIndex: i,
+        nftTypeIndex: i,
         clan: playerClan[i],
         color: playerColors[i],
         imageURI: playerImageURIs[i],
-        class: 0,
+        class: 1,
         stealsLeft: 2,
         maxSteals: 2,
         totalStealsAttempted: 0,
@@ -61,35 +62,36 @@ contract Thief is ERC721 {
       defaultPlayerAttributes.push(player);
     }
     sendShieldOnNumber = 4;
+    _tokenIds.increment();
   }
 
-  function mintThiefNFT(uint _playerIndex) public {
+  function mintThiefNFT(uint _nftTypeIndex) public {
     uint256 newItemId = _tokenIds.current();
     _safeMint(msg.sender, newItemId);
-    uint classNo = uint(newItemId) / uint(100) + 1;
+    uint classNo = (uint(newItemId) - 1) / uint(100) + 1;
 
     nftHolderAttributes[newItemId] = PlayerAttributes({
-      playerIndex: _playerIndex,
-      clan: defaultPlayerAttributes[_playerIndex].clan,
-      color: defaultPlayerAttributes[_playerIndex].color,
-      imageURI: defaultPlayerAttributes[_playerIndex].imageURI,
+      nftTypeIndex: _nftTypeIndex,
+      clan: defaultPlayerAttributes[_nftTypeIndex].clan,
+      color: defaultPlayerAttributes[_nftTypeIndex].color,
+      imageURI: defaultPlayerAttributes[_nftTypeIndex].imageURI,
       class: classNo,
-      stealsLeft: defaultPlayerAttributes[_playerIndex].stealsLeft,
-      maxSteals: defaultPlayerAttributes[_playerIndex].maxSteals,
-      totalStealsAttempted: defaultPlayerAttributes[_playerIndex].totalStealsAttempted,
-      daggerCount: defaultPlayerAttributes[_playerIndex].daggerCount,
-      shieldCount: defaultPlayerAttributes[_playerIndex].shieldCount,
-      level: defaultPlayerAttributes[_playerIndex].level
+      stealsLeft: defaultPlayerAttributes[_nftTypeIndex].stealsLeft,
+      maxSteals: defaultPlayerAttributes[_nftTypeIndex].maxSteals,
+      totalStealsAttempted: defaultPlayerAttributes[_nftTypeIndex].totalStealsAttempted,
+      daggerCount: defaultPlayerAttributes[_nftTypeIndex].daggerCount,
+      shieldCount: defaultPlayerAttributes[_nftTypeIndex].shieldCount,
+      level: defaultPlayerAttributes[_nftTypeIndex].level
     });
 
     nftHolders[msg.sender] = newItemId;
     players.push(msg.sender);
     _tokenIds.increment();
 
-    emit PlayerNFTMinted(msg.sender, newItemId, _playerIndex);
+    emit PlayerNFTMinted(msg.sender, newItemId, _nftTypeIndex);
 
     // call this every X (sendShieldOnNumber) amount of mints
-    if((newItemId+1) % sendShieldOnNumber == 0) {
+    if(newItemId % sendShieldOnNumber == 0) {
       sendShieldToPlayer();
     }
   }
@@ -129,7 +131,7 @@ contract Thief is ERC721 {
   }
 
   function sendShieldToPlayer() private {
-    uint index = random() % _tokenIds.current();
+    uint index = random() % (_tokenIds.current() - 1);
     address winnerOfShield = players[index];
     uint256 nftTokenIdOfPlayer = nftHolders[winnerOfShield];
     PlayerAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
@@ -195,7 +197,7 @@ contract Thief is ERC721 {
     // Get the tokenId of the user's character NFT
     uint256 userNftTokenId = nftHolders[msg.sender];
     // If the user has a tokenId in the map, return their character.
-    if (userNftTokenId >= 0) {
+    if (userNftTokenId > 0) {
       return nftHolderAttributes[userNftTokenId];
     } else {
       PlayerAttributes memory emptyStruct;
@@ -203,10 +205,10 @@ contract Thief is ERC721 {
     }
   }
 
-  function getAPlayerNftDetails(address playerAdd) public view returns (PlayerAttributes memory) {
-    uint256 playerNftTokenId = nftHolders[playerAdd];
+  function getAPlayerNftDetails(address playerAddy) public view returns (PlayerAttributes memory) {
+    uint256 playerNftTokenId = nftHolders[playerAddy];
 
-    if (playerNftTokenId >= 0) {
+    if (playerNftTokenId > 0) {
       return nftHolderAttributes[playerNftTokenId];
     } else {
       PlayerAttributes memory emptyStruct;
