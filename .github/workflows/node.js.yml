@@ -13,7 +13,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      STAGING_ALCHEMY_KEY: ${{ secrets.STAGING_ALCHEMY_KEY }}
+      PROD_ALCHEMY_KEY: ${{ secrets.PROD_ALCHEMY_KEY }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
