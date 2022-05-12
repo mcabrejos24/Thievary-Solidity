@@ -86,7 +86,7 @@ This facuet is powered by [alchemy] so if you sign in with you alchemy account, 
 
 Once this is all done, then you can deploy the contract by running
 ```
-npx hardhat run scripts/deploy.js
+npx hardhat run scripts/deploy.js --network rinkeby
 ```
 
 A message in the terminal will give you back the address that this contract was deployed to.
