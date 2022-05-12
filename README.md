@@ -68,8 +68,6 @@ If you would like to contribute to this project, branch off from the master bran
 
 Once you make your changes on your new brach, commit and submit a pull request.
 
-Tests will run against your changes. If they do not pass, read the log to see why they failed. If they pass then request a review from @mcabrejos24.
-
 Once a review has been submitted and approved, you may merge the pull request.
 
 ## Deploying the contract
