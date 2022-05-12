@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
-import "hardhat/console.sol";
 
 contract Thief is ERC721 {
   address public manager;
@@ -44,6 +43,7 @@ contract Thief is ERC721 {
     string[] memory playerColors,
     string[] memory playerImageURIs
   ) ERC721("Theivary", "THIEF") {
+    manager = msg.sender;
     for(uint i = 0; i < playerClan.length; i += 1) {
       PlayerAttributes memory player = PlayerAttributes({
         playerIndex: i,
@@ -60,7 +60,7 @@ contract Thief is ERC721 {
       });
       defaultPlayerAttributes.push(player);
     }
-    sendShieldOnNumber = 3;
+    sendShieldOnNumber = 4;
   }
 
   function mintThiefNFT(uint _playerIndex) public {
@@ -86,12 +86,10 @@ contract Thief is ERC721 {
     players.push(msg.sender);
     _tokenIds.increment();
 
-    console.log("minted successfull with: ", _tokenIds.current());
-
     emit PlayerNFTMinted(msg.sender, newItemId, _playerIndex);
 
     // call this every X (sendShieldOnNumber) amount of mints
-    if(newItemId % sendShieldOnNumber == 0) {
+    if((newItemId+1) % sendShieldOnNumber == 0) {
       sendShieldToPlayer();
     }
   }
@@ -168,8 +166,8 @@ contract Thief is ERC721 {
     thief.totalStealsAttempted = thief.totalStealsAttempted + 1;
     _totalStealsCount.increment();
 
-    // if 25 total steals have been done, then reset everyone's steal count;
-    if (_totalStealsCount.current() % 25 == 0) {
+    // at least half of all players have stolen twice, or all once, then reset everyone's steal count;
+    if (_totalStealsCount.current() % players.length == 0) {
       resetStealsAndLevelUp();
     }
   }
