@@ -1,13 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-// const ganache = require("ganache-core");
-// const provider = new ethers.providers.Web3Provider(ganache.provider());
 
-// const signer0 = provider.getSigner(0);
-// const signer1 = provider.getSigner(1);
-
-// console.log(signer0);
-// console.log(signer1);
 let Thief;
 let thiefContract;
 let owner;
@@ -57,7 +50,9 @@ describe("Thief Game spin up and minting", function () {
     expect(playerAttribtues.clan).to.equal("A");
     playerAttribtues = await thiefContract.connect(signer1).checkIfUserHasNFT();
     expect(playerAttribtues.clan).to.equal("X");
-    
+    // expects to fail because signer2 doesn't mint
+    playerAttribtues = await thiefContract.connect(signer2).checkIfUserHasNFT();
+    expect(playerAttribtues.clan).to.equal("");
   });
 });
 
