@@ -1,6 +1,6 @@
 # The Thief Game Project
 
-This project is a game Dapp where players can mint a THIEF NFT and try to steal from other players.
+[Thievary] is a game Dapp where players can mint a THIEF NFT and try to steal from other players.
 
 All players start with one "dagger" and two "steals". Each player can attempt two steals of a single dagger from any player.
 
@@ -14,6 +14,8 @@ When the steals are reset, any players with 3 or more daggers are leveled up. Al
 Every 100 mints, the NFTs receive a new "class" where the classes start at class 1.
 
 A shield item is also sent on every variable "sendShieldOnNumber" mint. The contract initially sets this variable "sendShieldOnNumber" to 4 on contract creation so this would mean on every 4th mint. However, this number can be updated by the manager at any moment.
+
+You can check out this game here: [https://thievary-react-app.vercel.app/]
 
 ## Getting Started
 
@@ -99,7 +101,7 @@ Here is a link to the real etherscan: [etherscan.io].
 
 Once you have the new address to the contract, you can copy that and the abi file over to front end of the project.
 
-That is linked here: [thievary].
+That is linked here: [https://github.com/mcabrejos24/Thievary-React-App].
 
 ## Below are some hardhat terminal commands for reference
 Try running some of the following tasks:
@@ -122,4 +124,6 @@ npx hardhat help
 [alchemy]: https://www.alchemy.com/
 [etherscan]: https://rinkeby.etherscan.io/
 [etherscan.io]: https://etherscan.io/
-[thievary]: https://github.com/mcabrejos24/Thievary-React-App
+[https://github.com/mcabrejos24/Thievary-React-App]: https://github.com/mcabrejos24/Thievary-React-App
+[Thievary]: https://thievary-react-app.vercel.app/
+[https://thievary-react-app.vercel.app/]: https://thievary-react-app.vercel.app/
