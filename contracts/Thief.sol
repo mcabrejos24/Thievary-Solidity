@@ -12,6 +12,7 @@ contract Thief is ERC721 {
   uint public sendShieldOnNumber;
 
   struct PlayerAttributes {
+    uint itemId;
     uint nftTypeIndex;
     string clan;
     string color;
@@ -47,6 +48,7 @@ contract Thief is ERC721 {
     manager = msg.sender;
     for(uint i = 0; i < playerClan.length; i += 1) {
       PlayerAttributes memory player = PlayerAttributes({
+        itemId: 0,
         nftTypeIndex: i,
         clan: playerClan[i],
         color: playerColors[i],
@@ -71,6 +73,7 @@ contract Thief is ERC721 {
     uint classNo = (uint(newItemId) - 1) / uint(100) + 1;
 
     nftHolderAttributes[newItemId] = PlayerAttributes({
+      itemId: newItemId,
       nftTypeIndex: _nftTypeIndex,
       clan: defaultPlayerAttributes[_nftTypeIndex].clan,
       color: defaultPlayerAttributes[_nftTypeIndex].color,
@@ -110,7 +113,7 @@ contract Thief is ERC721 {
     string memory json = Base64.encode(
       abi.encodePacked(
         '{"name": "Thievary #: ',
-        Strings.toString(_tokenId),
+        Strings.toString(playerAttributes.itemId),
         '", "description": "This is an NFT that lets people play in the game Thievary!", "image": "',
         playerAttributes.imageURI,
         '", "attributes": [ {"trait_type": "Clan", "value": "', playerAttributes.clan, '"}, {"trait_type": "Color", "value": "', playerAttributes.color, '"}, {"trait_type": "Class", "value": "#', strClass, '"}, { "trait_type": "Steals Left", "value": ', strStealsLeft,', "max_value": ', strMaxSteals,'}, { "trait_type": "Total Lifetime Steals", "value": ',
