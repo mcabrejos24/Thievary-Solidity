@@ -17,6 +17,8 @@ A shield item is also sent on every variable "sendShieldOnNumber" mint. The cont
 
 You can check out this game here: [https://thievary-react-app.vercel.app/]
 
+The front end of this project is located here: [https://github.com/mcabrejos24/Thievary-React-App]
+
 ## Getting Started
 
 This project uses [git], [node] and [nvm]. Make sure these are all downloaded for your appropriate machine before continuing.
